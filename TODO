@@ -1,0 +1,6 @@
+
+Todo:
+  ☐ Installer Rust (rustup, cargo)
+  ☐ Installer ffmpeg, pulseaudio, xvfb, xauth pour les tests locaux
+  ☐ Cloner le repo cef-ui et compiler l’exemplesudo 
+  
