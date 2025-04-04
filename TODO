@@ -1,6 +1,95 @@
 
-Todo:
-  ☐ Installer Rust (rustup, cargo)
-  ☐ Installer ffmpeg, pulseaudio, xvfb, xauth pour les tests locaux
-  ☐ Cloner le repo cef-ui et compiler l’exemplesudo 
-  
+# 🚀 **TODO - CEF + WebRTC en Rust** 
+> **Une app Rust avec CEF qui s’exécute dans un conteneur sandboxé et streame son rendu audio/vidéo via WebRTC dans un navigateur distant.**
+
+---
+
+## ✅ **To-Do List Totale**
+
+---
+
+### 🔧 **1. Préparer ton environnement local**
+
+- [x] Installer Rust (`rustup`, `cargo`)
+- [x] Installer `ffmpeg`, `pulseaudio`, `xvfb`, `xauth` pour les tests locaux
+- [x] Cloner le repo `cef-ui` et compiler l’exemple
+    ```bash
+    cargo cef-build-release
+    cp ./target/release/cef-ui-simple ./cef-client
+    ```
+
+---
+
+### 🛠️ **2. Créer le conteneur Docker**
+
+- [x] Créer un `Dockerfile` incluant :
+  - X11 virtuel (`xvfb`, `xauth`)
+  - Audio (`pulseaudio`)
+  - Vidéo (`ffmpeg`)
+  - App Rust (`cef-client`) coder dans un autre depot 
+- [ ] Écrire le script `start.sh` qui :
+  - Démarre PulseAudio
+  - Lance `cef-client` via `xvfb-run`
+  - Lance `ffmpeg` pour capturer et envoyer en RTP
+
+---
+
+### 📡 **3. Intégrer le WebRTC en Rust avec [`webrtc.rs`](https://github.com/webrtc-rs/webrtc)**
+
+- [ ] Ajouter `webrtc = "0.8"` dans `Cargo.toml`
+- [ ] Créer une app Rust qui :
+  - Crée une `PeerConnection`
+  - Lit un flux RTP (de `ffmpeg`)
+  - Envoie l’offre SDP vers le navigateur
+  - Reçoit une `answer` du navigateur
+
+---
+
+### 🧬 **4. Créer un canal de signalisation Web (WebSocket ou HTTP)**
+
+- [ ] Intégrer un petit serveur HTTP avec `axum`, `warp` ou `hyper`
+- [ ] Exposer :
+  - `/offer` → retourne l’offre SDP
+  - `/answer` → reçoit l’`answer` depuis la page web
+- [ ] Gérer les `ICE candidates` (optionnel pour MVP)
+
+---
+
+### 🌐 **5. Créer ta page web pour recevoir le flux**
+
+- [ ] Écrire une page HTML avec :
+  - `<video autoplay playsinline>`
+  - JS pour récupérer l’offre SDP (`fetch /offer`)
+  - JS pour envoyer l’`answer` (`POST /answer`)
+- [ ] Tester que le flux apparaît
+
+---
+
+### 🧪 **6. Lier tout ça dans un conteneur unifié**
+
+- [ ] Copier `cef-client`, le serveur WebRTC, la page HTML, le `start.sh` dans le conteneur
+- [ ] Démarrer tout automatiquement dans le `CMD`
+- [ ] Construire l’image :
+    ```bash
+    docker build -t cef-webrtc .
+    ```
+- [ ] Lancer le conteneur :
+    ```bash
+    docker run --rm cef-webrtc
+    ```
+
+---
+
+### 🧷 **7. Sécuriser et finaliser**
+
+- [ ] S'assurer que le conteneur ne **n'expose aucun port** sauf pour la signalisation (ou tout en sortant)
+- [ ] Ajouter `--cap-drop`, `--no-new-privileges`, etc.
+- [ ] Documenter la procédure complète
+
+---
+
+### 🧭 **Bonus (optionnel)**
+
+- [ ] Ajouter un **reverse proxy NGINX** avec HTTPS pour la signalisation
+- [x] Ajouter **STUN/TURN** pour NAT traversal
+- [ ] Ajouter un **auth system** si usage en production
