@@ -27,7 +27,7 @@
   - Audio (`pulseaudio`)
   - Vidéo (`ffmpeg`)
   - App Rust (`cef-client`) coder dans un autre depot 
-- [ ] Écrire le script `start.sh` qui :
+- [x] Écrire le script `start.sh` qui :
   - Démarre PulseAudio
   - Lance `cef-client` via `xvfb-run`
   - Lance `ffmpeg` pour capturer et envoyer en RTP
@@ -37,7 +37,7 @@
 ### 📡 **3. Intégrer le WebRTC en Rust avec [`webrtc.rs`](https://github.com/webrtc-rs/webrtc)**
 
 - [ ] Ajouter `webrtc = "0.8"` dans `Cargo.toml`
-- [ ] Créer une app Rust qui :
+- [x ] Créer une app Rust qui :
   - Crée une `PeerConnection`
   - Lit un flux RTP (de `ffmpeg`)
   - Envoie l’offre SDP vers le navigateur
@@ -47,11 +47,11 @@
 
 ### 🧬 **4. Créer un canal de signalisation Web (WebSocket ou HTTP)**
 
-- [ ] Intégrer un petit serveur HTTP avec `axum`, `warp` ou `hyper`
+- [x] Intégrer un petit serveur HTTP avec `axum`, `warp` ou `hyper`
 - [ ] Exposer :
   - `/offer` → retourne l’offre SDP
   - `/answer` → reçoit l’`answer` depuis la page web
-- [ ] Gérer les `ICE candidates` (optionnel pour MVP)
+- [x] Gérer les `ICE candidates` (optionnel pour MVP)
 
 ---
 
@@ -67,9 +67,9 @@
 
 ### 🧪 **6. Lier tout ça dans un conteneur unifié**
 
-- [ ] Copier `cef-client`, le serveur WebRTC, la page HTML, le `start.sh` dans le conteneur
+- [x] Copier `cef-client`, le serveur WebRTC, la page HTML, le `start.sh` dans le conteneur
 - [ ] Démarrer tout automatiquement dans le `CMD`
-- [ ] Construire l’image :
+- [x] Construire l’image :
     ```bash
     docker build -t cef-webrtc .
     ```
