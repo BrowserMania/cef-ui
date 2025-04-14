@@ -1,51 +1,58 @@
-#La base de l'image est une image Ubuntu 22.04
-# L'image est optimisée pour exécuter une application Rust avec CEF (Chromium Embedded Framework) mais a revoir sil je trouve qu'elle est trop lourde
+# Utiliser une image de base Ubuntu 22.04
 FROM ubuntu:22.04
 
-# Variables d'environnement
-ENV DEBIAN_FRONTEND=noninteractive
+# Installation des dépendances système
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    cmake \
+    pkg-config \
+    libx11-dev \
+    libxtst-dev \
+    libxi-dev \
+    libglib2.0-dev \
+    libgdk-pixbuf2.0-dev \
+    libpulse-dev \
+    xvfb \
+    ffmpeg \
+    libvpx-dev \
+    libopus-dev \
+    libavformat-dev \
+    libavcodec-dev \
+    libswscale-dev \
+    libwebp-dev \
+    wget \
+    python3-pip \
+    libssl-dev
 
-# Dépendances
-RUN apt-get update && apt-get install -y \
-    libgtk-3-0 libglib2.0-0 libnss3 libxss1 libasound2 \
-    pulseaudio x11vnc xvfb curl unzip git wget \
-    libxcomposite-dev libxrandr-dev libxcursor-dev libxdamage-dev \
-    libxtst-dev libx11-xcb-dev build-essential cmake pkg-config \
-    libssl-dev libx11-dev libxext-dev libgl1-mesa-glx libegl1 \
-    libxrender1 libxinerama1 ca-certificates \
-    ffmpeg libavcodec-dev libavformat-dev libavutil-dev \
-    libswscale-dev libavfilter-dev libavdevice-dev \
-    clang libclang-dev llvm-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-
-
-# Installer Rust et dépendances
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+# Installer Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-
-# Install Just
-RUN cargo install just \
-    && wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl-shared.tar.xz \
-    && tar -xf ffmpeg-master-latest-linux64-gpl-shared.tar.xz
-
-
-# ---- BUILD BitWHIP ----
-WORKDIR /opt
-RUN git clone https://github.com/bitwhip/bitwhip.git
-WORKDIR /opt/bitwhip
-RUN cd /opt/bitwhip && \
-    cargo build --release
-
-# ---- BUILD CEF-UI PROJECT ----
+# Installer 'cef-ui' (en supposant qu'il soit déjà disponible ou que tu doives le cloner et le compiler)
 WORKDIR /app
-COPY . /app
-
-# Builder ton projet Rust avec CEF
+RUN git clone https://github.com/your-repo/cef-ui.git
+WORKDIR /app/cef-ui
 RUN cargo build --release
 
-# Script de démarrage
+# Installer BitWhip pour WebRTC
+RUN git clone https://github.com/your-repo/bitwhip.git
+WORKDIR /app/bitwhip
+RUN cargo build --release
+
+# Créer un utilisateur non-root pour exécuter l'application
+RUN useradd -m appuser
+USER appuser
+
+# Exposer le répertoire de téléchargement
+VOLUME ["/downloads"]
+
+# Exposer un port HTTP pour les fichiers téléchargés
+EXPOSE 8080
+
+# Script d'initialisation
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
