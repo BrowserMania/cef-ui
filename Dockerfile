@@ -31,26 +31,21 @@ RUN apt-get update && \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Installer 'cef-ui' (en supposant qu'il soit déjà disponible ou que tu doives le cloner et le compiler)
-WORKDIR /app
-RUN git clone https://github.com/your-repo/cef-ui.git
+
+COPY . /app/cef-ui
 WORKDIR /app/cef-ui
 RUN cargo build --release
 
 # Installer BitWhip pour WebRTC
-RUN git clone https://github.com/your-repo/bitwhip.git
+RUN git clone https://github.com/bitwhip/bitwhip
 WORKDIR /app/bitwhip
 RUN cargo build --release
 
-# Créer un utilisateur non-root pour exécuter l'application
 RUN useradd -m appuser
 USER appuser
-
+push
 # Exposer le répertoire de téléchargement
 VOLUME ["/downloads"]
-
-# Exposer un port HTTP pour les fichiers téléchargés
-EXPOSE 8080
 
 # Script d'initialisation
 COPY start.sh /start.sh
