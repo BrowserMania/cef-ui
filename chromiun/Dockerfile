@@ -38,7 +38,7 @@ RUN echo "**** configure chromium for headless mode ****" && \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Installer `just` avec cargo
+# Installer `just` avec cargo (à revoir car il y a un problème de dépendance)
 RUN cargo install just
 
 # Installer et construire BitWHIP
