@@ -20,3 +20,4 @@ echo "[+] Lancement de BitWHIP en mode streaming..."
     stream http://localhost:1337/api/whip browsermania-token &
 
 wait $CEF_PID
+

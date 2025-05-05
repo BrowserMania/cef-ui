@@ -43,7 +43,6 @@ RUN cargo build --release
 
 RUN useradd -m appuser
 USER appuser
-push
 # Exposer le répertoire de téléchargement
 VOLUME ["/downloads"]
 
@@ -52,3 +51,53 @@ COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 CMD ["/start.sh"]
+
+
+
+# Utilisation de l'image Ubuntu 22.04
+FROM ubuntu:22.04
+
+# Mettre à jour et installer les dépendances
+RUN apt-get update && apt-get install -y \
+    rustc \
+    cargo \
+    build-essential \
+    xorg \
+    xvfb \
+    pulseaudio \
+    ffmpeg \
+    gstreamer \
+    libx11-dev \
+    libpulse-dev \
+    chromium-browser \
+    git \
+    curl
+
+# Installer "just" pour faciliter le processus de construction
+RUN cargo install just
+
+# Installer les dépendances de BitWHIP
+RUN curl -fsSL https://github.com/casey/just/releases/download/v0.11.0/just-v0.11.0-x86_64-unknown-linux-gnu.tar.xz | tar -xJf - -C /usr/local/bin
+
+# Cloner le projet BitWHIP
+RUN git clone https://github.com/bitwhip/bitwhip.git /bitwhip
+
+# Se déplacer dans le dossier du projet
+WORKDIR /bitwhip
+
+# Installer les dépendances de BitWHIP et construire le projet
+RUN just install-deps
+
+# Créer un utilisateur non-root pour exécuter l'application
+RUN useradd -m browserman
+USER browserman
+
+# Dossier de travail
+WORKDIR /home/browserman
+
+# Ajouter le script de démarrage
+COPY start.sh /home/browserman/start.sh
+RUN chmod +x /home/browserman/start.sh
+
+# Commande de démarrage par défaut
+CMD ["/home/browserman/start.sh"]
