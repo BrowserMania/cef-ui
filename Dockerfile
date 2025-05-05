@@ -47,7 +47,7 @@ USER appuser
 VOLUME ["/downloads"]
 
 # Script d'initialisation
-COPY start.sh /start.sh
+COPY docker-chromium/start.sh /start.sh
 RUN chmod +x /start.sh
 
 CMD ["/start.sh"]
@@ -96,7 +96,7 @@ USER browserman
 WORKDIR /home/browserman
 
 # Ajouter le script de démarrage
-COPY start.sh /home/browserman/start.sh
+COPY docker-chromium/start.sh /home/browserman/start.sh
 RUN chmod +x /home/browserman/start.sh
 
 # Commande de démarrage par défaut
